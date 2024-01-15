@@ -178,7 +178,37 @@ def calculate_leaf_pseudostem_length(ligule_heights, bottom_hiddenzone_height, p
     return max(leaf_pseudostem_length, 0)
 
 
-def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf_rank, optimal_growth_option):
+# def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf_rank, optimal_growth_option):
+#     """ Delta of leaf length over delta_t as a function of sucrose and amino acids, from initiation to the emergence of the previous leaf.
+#
+#     :param float sucrose: Amount of sucrose (µmol C)
+#     :param float leaf_L: Total leaf length (m)
+#     :param float amino_acids: Amount of amino acids (µmol N)
+#     :param float mstruct: Structural mass (g)
+#     :param float delta_teq: Temperature-consensated time = time duration at a reference temperature (s)
+#     :param int leaf_rank: leaf phytomer number
+#     :param bool optimal_growth_option: if True the function will calculate leaf elongation assuming optimal growth conditions (except if sucrose and amino acids are zero)
+#
+#     :return: delta delta_leaf_L (m)
+#     :rtype: float
+#     """
+#     conc_sucrose_effective = max(0., sucrose / mstruct - parameters.conc_sucrose_offset)
+#
+#     if conc_sucrose_effective > 0 and amino_acids > 0:
+#         if optimal_growth_option:
+#             RER_max = parameters.RERmax_Ljutovac_fit.get(leaf_rank, parameters.RERmax_Ljutovac_fit[max(parameters.RERmax_Ljutovac_fit.keys())])
+#             delta_leaf_L = leaf_L * RER_max * delta_teq
+#         else:
+#             RER_max = parameters.RERmax.get(leaf_rank, parameters.RERmax[max(parameters.RERmax.keys())])
+#             # Enzymatic rate for bi-substrats with random fixation
+#             conc_amino_acids = (amino_acids / mstruct)
+#             delta_leaf_L = delta_teq * leaf_L * RER_max / ( (1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids) )
+#     else:
+#         delta_leaf_L = 0
+#
+#     return delta_leaf_L
+
+def calculate_deltaL_preE(xylem_water_potential, sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf_rank, optimal_growth_option):
     """ Delta of leaf length over delta_t as a function of sucrose and amino acids, from initiation to the emergence of the previous leaf.
 
     :param float sucrose: Amount of sucrose (µmol C)
@@ -202,7 +232,15 @@ def calculate_deltaL_preE(sucrose, leaf_L, amino_acids, mstruct, delta_teq, leaf
             RER_max = parameters.RERmax.get(leaf_rank, parameters.RERmax[max(parameters.RERmax.keys())])
             # Enzymatic rate for bi-substrats with random fixation
             conc_amino_acids = (amino_acids / mstruct)
-            delta_leaf_L = delta_teq * leaf_L * RER_max / ( (1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids) )
+
+            # Sigmoid function of LER with xylem water potential
+            conc_water = 1 / (1 + exp(-1 * xylem_water_potential - 0.5))
+            # parameters.RER_Kw = 3.6E-06   #: h mm-1
+            # 1 mm s-1 = 3.6E-06 mm h-1
+            # dimensionless between conc_water and RER_Kw
+
+            delta_leaf_L = delta_teq * leaf_L * RER_max / ((1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids))
+            # delta_leaf_L = delta_teq * leaf_L * RER_max / ((1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids) * (1 + parameters.RER_Kw / conc_water))
     else:
         delta_leaf_L = 0
 
@@ -328,6 +366,7 @@ def calculate_leaf_emergence(leaf_L, leaf_pseudostem_length):
     :return: Specifies if the leaf has emerged (True) or not (False)
     :rtype: bool
     """
+
     return leaf_L > leaf_pseudostem_length
 
 
@@ -343,8 +382,10 @@ def calculate_lamina_L(leaf_L, leaf_pseudostem_length, hiddenzone_id, lamina_Lma
     :rtype: float
     """
     lamina_L = leaf_L - leaf_pseudostem_length
-    # if lamina_L <= 0:
-    #     raise Warning('The leaf is shorther than its pseudostem for {}'.format(hiddenzone_id))
+
+    #: TO DO with elasticity ?
+    if lamina_L <= 0:
+        raise Warning('The leaf is shorther than its pseudostem for {}'.format(hiddenzone_id))
 
     return max(10 ** -5,
                min(lamina_L, lamina_Lmax))  # Minimum length set to 10^-6 m to make sure growth-wheat can run even if the lamina turns back hidden (case when an older sheath elongates faster)
@@ -709,7 +750,6 @@ def calculate_delta_internode_L_postL(prev_internode_pseudo_age, internode_pseud
         delta_internode_L = 0
 
     return delta_internode_L
-
 
 def calculate_update_internode_Lmax(internode_Lmax_lig, internode_L, internode_pseudo_age):
     """ Update internode_Lmax following a reduction of delta_leaf_L due to C and N regulation

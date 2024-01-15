@@ -29,6 +29,20 @@ Temp_DS_R = 68.432    # Parameter deltaS/R in Eyring equation from Johnson and L
 Temp_DH_R = 20735.5   # Parameter deltaH/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (K)
 Temp_Ttransition = 9  # Below this temperature f = linear function of temperature instead of Arrhenius-like(°C)
 
+#: TEST FOR TURGORGROWTH
+#: / 2
+# Temp_Tref = 12        # Arbitrary reference temperature (°C)
+# Temp_Ea_R = 4450      # Parameter Ea/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (K)
+# Temp_DS_R = 34.216    # Parameter deltaS/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (dimensionless)
+# Temp_DH_R = 10367.75   # Parameter deltaH/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (K)
+# Temp_Ttransition = 9  # Below this temperature f = linear function of temperature instead of Arrhenius-like(°C)
+#: / 4
+# Temp_Tref = 12        # Arbitrary reference temperature (°C)
+# Temp_Ea_R = 2225      # Parameter Ea/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (K)
+# Temp_DS_R = 17.108    # Parameter deltaS/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (dimensionless)
+# Temp_DH_R = 5183.875   # Parameter deltaH/R in Eyring equation from Johnson and Lewin (1946) - Parameter value fitted from Kemp and Blacklow (1982) (K)
+# Temp_Ttransition = 9  # Below this temperature f = linear function of temperature instead of Arrhenius-like(°C)
+
 # -------------------------------------------------------------------------------------------------------------------
 # --- Leaves
 # -------------------------------------------------------------------------------------------------------------------
@@ -37,14 +51,24 @@ conc_sucrose_offset = 240  #: sucrose concentration under which no leaf and inte
 # Exponential elongation
 RERmax_Ljutovac_fit = {5: 0.000003, 6: 0.00000175, 7: 0.00000164, 8: 0.00000154, 9: 0.00000151, 10: 0.00000134, 11: 0.00000129} # Optimal RERmax (s-1 at 12°C) allowing to simulate leaf dimensions of Ljutovac (2002)
 # { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Observed RER on data of Ljutovac 2002 RER (s-1 at 12°C)
-RERmax = {5: 3.35e-06, 6: 2.1e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}  # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+
+RERmax = {5: 3.35e-06, 6: 2.1e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+
+#: V1
+# RERmax = {5: 3.95e-06, 6: 2.7e-06, 7: 2.6e-06, 8: 2.43e-06, 9: 2.4e-06, 10: 2.25E-06, 11: 2.16e-06}   # RERmax (s-1 at 20°C) fitted for simulations accounting for metabolic and hydraulic regulation # Update in 12/2023
+#: V2
+# RERmax = {5: 3.95e-07, 6: 2.7e-07, 7: 2.6e-07, 8: 2.43e-07, 9: 2.4e-07, 10: 2.25E-07, 11: 2.16e-07}   # RERmax (s-1 at 20°C) fitted for simulations accounting for metabolic and hydraulic regulation # Update in 12/2023
+#: V3
+# RERmax = {5: 3.95e-05, 6: 2.7e-05, 7: 2.6e-05, 8: 2.43e-05, 9: 2.4e-05, 10: 2.25E-05, 11: 2.16e-05}   # RERmax (s-1 at 20°C) fitted for simulations accounting for metabolic and hydraulic regulation # Update in 12/2023
+
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
+RER_Kw = 3.6E-06  #: affinity coefficient of RER to H2O (h mm-1)
 
 # Automate elongation
 te = 300 * 3600 * 24 / 12     #: end of leaf elongation in automate growth (s at 12°c); fitted from adapted data from Fournier 2005
 tm = 204.6 * 3600 * 24 / 12   #: time at which leaf elongation rate is maximal in automate growth (s at 12°c); fitted from adapted data from Fournier 2005
-tb = -114.3 * 3600 * 24 / 12  #: beginning of leaf elongation in automate growth (s at 12°c); fitted from adapted data from Fournier 2005
+tb = -114.3 * 3600 * 24 / 12  #: beginning of leaf elongation in automte growth (s at 12°c); fitted from adapted data from Fournier 2005
 # NB : Previous fit on adapted data from Fournier 2005 in phyllochronic time te = 271, tm=176, tb=-25
 leaf_Lmax_MAX = 0.45           #: Maximum leaf_Lmax (m)
 
@@ -94,6 +118,7 @@ ratio_DZ_l_end = 0.7        #: normalized log of leaf length at which the the le
 # Exponential elongation
 RERmax_dict_IN = {3: 2.4E-06, 4: 2.4E-06, 5: 2.4E-06, 6: 2.4E-06, 7: 2.16E-06, 8: 1.8E-06, 9: 1.91E-06, 10: 1.9E-06, 11: 1.76E-06, 12: 1.5E-06}  #: s-1 at 12°C FIT jan 20
 # { 3 : 2.48E-06 ,4 : 2.48E-06 ,5 : 2.48E-06 , 6 : 2.48E-06 , 7 : 2.48E-06 , 8 : 2.48E-06 , 9 : 2.48E-06 , 10 : 1.9E-06 , 11 : 1.6E-06 }#: s-1 at 12°C
+
 # estimate from Ljutovac 2002 over the period until leaf ligulation i.e. wider than in the model.
 # Because i) not enought data if we consider only up to previous leaf ligulation, ii) same exponential like period
 
@@ -154,6 +179,7 @@ class HiddenZoneInit(object):
         self.ratio_DZ = 1.0
 
         # Default values used for RER calculation in elong wheat
+        self.water_content = 0.000481157                  #: g H2O
         self.sucrose = 5E-6                      #: µmol C
         self.amino_acids = 4E-6                  #: µmol N
         self.fructan = 0                         #: µmol C - about 10% DM
@@ -166,7 +192,6 @@ class HiddenZoneInit(object):
         self.proteins = 2.6E-03                   #: µmol N - about 9% N
         self.conc_cytokinins = 150                #: AU / g mstruct
         self.mean_conc_sucrose = 0  #: µmol C / g mstruct
-
 
 class ElementInit(object):
     """
