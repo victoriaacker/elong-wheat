@@ -67,7 +67,10 @@ def from_dataframes(hiddenzone_inputs, element_inputs, axis_inputs):
         all_element_dict[element_inputs_id] = element_inputs_dict
         # Complete dict of lengths
         axis_id, phytomer_id, organ = element_inputs_id[:2], element_inputs_id[2], element_inputs_id[3]
-        if organ == 'sheath' and not element_inputs_dict['is_growing']:
+        #: TEST 25.04.24
+        if organ == 'sheath' and element_inputs_dict['is_growing']:
+            all_length_dict[axis_id][phytomer_id]['sheath'].append(element_inputs_dict['length'])
+        elif organ == 'sheath' and not element_inputs_dict['is_growing']:
             all_length_dict[axis_id][phytomer_id]['sheath'].append(element_inputs_dict['length'])
         elif organ == 'internode' and not element_inputs_dict['is_growing']:  # WARNING: this algo won't copy previous internode length for a phytomer without internode
             cumulated_internode_length[axis_id].append(element_inputs_dict['length'])
@@ -84,8 +87,13 @@ def from_dataframes(hiddenzone_inputs, element_inputs, axis_inputs):
         # Complete dict of  length
         axis_id = hiddenzone_inputs_id[:2]
         phytomer_id = hiddenzone_inputs_id[2]
-        if hiddenzone_inputs_dict['leaf_is_emerged'] and hiddenzone_inputs_dict['leaf_is_growing']:
-            growing_sheath_length = max(0, hiddenzone_inputs_dict['leaf_L'] - hiddenzone_inputs_dict['lamina_Lmax'])  # TODO mettre ce calcul ailleurs certainement.
+        # if hiddenzone_inputs_dict['leaf_is_emerged'] and hiddenzone_inputs_dict['leaf_is_growing']:
+            #: TODO without Lmax
+        if hiddenzone_inputs_dict['leaf_is_emerged'] and not hiddenzone_inputs_dict['sheath_is_emerged']:
+            # growing_sheath_length = max(0, hiddenzone_inputs_dict['leaf_L'] - hiddenzone_inputs_dict['lamina_Lmax'])  # TODO mettre ce calcul ailleurs certainement.
+            #: TEST 23.04.24
+            # growing_sheath_length = max(0, hiddenzone_inputs_dict['leaf_L'] - (hiddenzone_inputs_dict['leaf_L'] - hiddenzone_inputs_dict['leaf_pseudostem_length']))  # TODO mettre ce calcul ailleurs certainement.
+            growing_sheath_length = 0
             all_length_dict[axis_id][phytomer_id]['sheath'].append(growing_sheath_length)
         if hiddenzone_inputs_dict['internode_is_growing']:
             cumulated_internode_length[axis_id].append(hiddenzone_inputs_dict['internode_L'])
