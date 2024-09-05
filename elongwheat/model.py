@@ -286,7 +286,6 @@ def calculate_sheath_emergence(hiddenzone_age, leaf_rank):
     """Calculate if a given sheath has emerged from its pseudostem
 
     :param float hiddenzone_age: Age of the hiddenzone in thermal-compensated time (s)
-    :param float hiddenzoneid: Rank of the leaf (m)
 
     :return: Specifies if the sheath has emerged (True) or not (False)
     :rtype: bool
@@ -299,11 +298,15 @@ def calculate_sheath_emergence(hiddenzone_age, leaf_rank):
     # emergence_time = 3840000 * exp(0.0374 * leaf_rank)    # : Exponential - bis  # v2
     # emergence_time = 3880000 * exp(0.0374 * leaf_rank)    # : Exponential - bis    # v3       OK
 
-    emergence_time = 3860000 * exp(0.0374 * leaf_rank)    # : Exponential - bis    # v4
+    # emergence_time = 3860000 * exp(0.0374 * leaf_rank)    # : Exponential - bis    # v4
+
     # emergence_time = 3877000 * exp(0.0374 * leaf_rank)    # : Exponential - bis    # v5       OK
 
-    emergence_time = 3860000 * exp(0.030 * leaf_rank)    # : Early emergence
+    #: EARLY EMERGENCE 07.2024
+    # emergence_time = 3860000 * exp(0.02985 * leaf_rank)    # : v5
 
+    emergence_time = parameters.hiddenzone_age_dict[leaf_rank]
+    # emergence_time = 181202 * leaf_rank + 3470000    # : equation v1 - TODO
 
     if hiddenzone_age >= emergence_time:
         sheath_is_emerged = True

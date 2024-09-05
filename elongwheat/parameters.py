@@ -43,7 +43,7 @@ RERmax_Ljutovac_fit = {5: 0.000003, 6: 0.00000175, 7: 0.00000164, 8: 0.00000154,
 
 RERmax = {5: 3.35e-06, 6: 2.1e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 # Coupling elong-wheat and turgor-growth
-# RERmax = {5: 3.35e-06, 6: 2.1e-06, 7: 1.8e-06, 8: 1.53e-06, 9: 1.5e-06, 10: 1.45e-06, 11: 1.36e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+# RERmax = {5: 3.35e-06, 6: 1.5e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
@@ -60,7 +60,12 @@ tb = -114.3 * 3600 * 24 / 12  #: beginning of leaf elongation in automte growth 
 
 # NB : Previous fit on adapted data from Fournier 2005 in phyllochronic time te = 271, tm=176, tb=-25
 leaf_Lmax_MAX = 0.45           #: Maximum leaf_Lmax (m)
-lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3}
+lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3}    #: Maximum lamina width (m)
+t_sheath_emergence_dict = {3: 319, 4: 814, 5: 1447, 6: 1809, 7: 2153, 8: 2467}     #: Time of sheath emergence (s)
+# v0
+# hiddenzone_age_dict = {3: 4304257.762806, 4: 4514564.329, 5: 4717910.118, 6: 4851700.006, 7: 5038967.217, 8: 5207272.318}     #: Hiddenzone age for sheath emergence (s)
+#v1
+hiddenzone_age_dict = {3: 4004257.762806, 4: 4214564.329, 5: 4297910.118, 6: 4551700.006, 7: 4738967.217, 8: 4907272.318}     #: Hiddenzone age for sheath emergence (s)
 
 leaf_pseudo_age_Vmax = 1.2    #: Maximal regulation of leaf length after emergence by CN status (dimensionless)
 leaf_pseudo_age_Kc = 150      #: affinity coefficient to C (µmol g-1)
@@ -152,11 +157,12 @@ class HiddenZoneInit(object):
         self.LSSW = None                         #: g m-1, no calculation before emergence Ln-1 (about 2)
         self.leaf_is_emerged = False
         self.sheath_is_emerged = False
+        self.sheath_Lmax = None                  #: m, no calculation before emergence Ln-1
         self.internode_Lmax = None               #: m, no calculation before ligulation Ln
         self.internode_Lmax_lig = None           #: m, no calculation before ligulation Ln
         self.LSIW = None                         #: g m-1, no calculation before ligulation Ln
         self.internode_is_visible = False
-        self.leaf_pseudo_age = 0
+        self.leaf_pseudo_age = None
         self.internode_pseudo_age = 0
         self.delta_leaf_pseudo_age = 0
         self.delta_internode_pseudo_age = 0
@@ -165,6 +171,7 @@ class HiddenZoneInit(object):
         self.leaf_is_remobilizing = False
         self.internode_is_remobilizing = False
         self.ratio_DZ = 1.0
+        self.init_leaf_L = 0
 
         # Default values used for RER calculation in elong wheat
         self.sucrose = 5E-6                      #: µmol C
