@@ -18,6 +18,7 @@ from __future__ import division  # use "//" to do integer division
 # -------------------------------------------------------------------------------------------------------------------
 PLASTOCHRONE = 76.1/12*24*3600    #: Leaf plastochron (s at 12°C) calculated from Ljutovac 2002 with primordia of 5E-5 m (76 dd) ; Malvoisin 35dd associated with init 3E-5 m
 max_nb_leaves = 11   #: Max number of leaves per axis
+# max_nb_leaves = 20   #: Max number of leaves per axis
 delta_TT_GA = PLASTOCHRONE * 5  #: Thermal time between floral transition of SAM and Gibberelin production expressed as a function of plastochron (s at 12°C) ; Malvoisin's data give 7 plastochrons
 
 sowing_depth = 0.05  #: Sowing depth (m) used to define plant emergence
@@ -42,8 +43,8 @@ RERmax_Ljutovac_fit = {5: 0.000003, 6: 0.00000175, 7: 0.00000164, 8: 0.00000154,
 # { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Observed RER on data of Ljutovac 2002 RER (s-1 at 12°C)
 
 RERmax = {5: 3.35e-06, 6: 2.1e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
-# Coupling elong-wheat and turgor-growth
-# RERmax = {5: 3.35e-06, 6: 1.5e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+# Coupling elong-wheat and turgor-growth - 08.2024
+# RERmax = {5: 3.55e-06, 6: 2.2e-06, 7: 2.12e-06, 8: 2.1e-06, 9: 2.08e-06, 10: 1.95e-06, 11: 1.86e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
@@ -59,8 +60,11 @@ tm = 204.6 * 3600 * 24 / 12   #: time at which leaf elongation rate is maximal i
 tb = -114.3 * 3600 * 24 / 12  #: beginning of leaf elongation in automte growth (s at 12°c); fitted from adapted data from Fournier 2005
 
 # NB : Previous fit on adapted data from Fournier 2005 in phyllochronic time te = 271, tm=176, tb=-25
-leaf_Lmax_MAX = 0.45           #: Maximum leaf_Lmax (m)
-lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3}    #: Maximum lamina width (m)
+# leaf_Lmax_MAX = 0.45           #: Maximum leaf_Lmax (m)
+# Fixed meteo
+leaf_Lmax_MAX = 0.50  #: Maximum leaf_Lmax (m)
+lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3}    #: Maximum lamina length (m)
+# lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3, 12: 0.32, 13: 0.34, 14: 0.36, 15: 0.38, 16: 0.4, 17: 0.42, 18: 0.44, 19: 0.46, 20: 0.48}    #: Maximum lamina length (m)
 t_sheath_emergence_dict = {3: 319, 4: 814, 5: 1447, 6: 1809, 7: 2153, 8: 2467}     #: Time of sheath emergence (s)
 # v0
 # hiddenzone_age_dict = {3: 4304257.762806, 4: 4514564.329, 5: 4717910.118, 6: 4851700.006, 7: 5038967.217, 8: 5207272.318}     #: Hiddenzone age for sheath emergence (s)
@@ -73,6 +77,8 @@ leaf_pseudo_age_Kn = 4        #: affinity coefficient to N (µmol g-1)
 
 # Leaf maximal width  TODO doc
 leaf_Wmax_dict = {3: 0.0040, 4: 0.0045, 5: 0.0056, 6: 0.0075, 7: 0.010, 8: 0.012, 9: 0.013, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
+# leaf_Wmax_dict = {3: 0.0040, 4: 0.0045, 5: 0.0056, 6: 0.0075, 7: 0.010, 8: 0.012, 9: 0.013, 10: 0.014, 11: 0.018, 12: 0.019, 13: 0.02, 14: 0.021, 15: 0.022, 16: 0.023, 17: 0.024, 18: 0.025, 19: 0.026, 20: 0.027}  #: m (Ljutovac 2002)
+
 leaf_W_L_MIN = 0.025  #: Minimal leaf width
 leaf_W_L_a = -0.02033728
 leaf_W_L_b = -0.00005445836
@@ -80,6 +86,7 @@ leaf_W_L_c = 0.000459551
 
 # Structural Specific Lamina Weight
 leaf_SSLW = {1: 22, 2: 22, 3: 22, 4: 22, 5: 22, 6: 22, 7: 22, 8: 24, 9: 25, 10: 28, 11: 31}  # SSLW (g m-2)
+leaf_SSLW_Marion = {1: 21, 2: 21, 3: 22, 4: 17, 5: 19.58, 6: 20.9, 7: 23.55, 8: 25.63, 9: 28.65, 10: 28, 11: 31}  # SSLW (g m-2)
 leaf_SSLW_NEMA = {1: 15, 2: 23, 3: 25, 4: 24, 5: 21, 6: 18, 7: 16, 8: 18, 9: 21, 10: 26, 11: 33}  # Manip NEMA 05/06 traitments N+ (from data of J. Bertheloot, 2004) sauf pour F7/F8
 leaf_SSLW_MIN = 5.
 leaf_SSLW_MAX = 45.
@@ -87,6 +94,7 @@ leaf_SSLW_a = 47.50516
 leaf_SSLW_b = 2927.944
 
 leaf_LSSW_dict = {1: 0.08, 2: 0.09, 3: 0.11, 4: 0.18, 5: 0.17, 6: 0.21, 7: 0.24, 8: 0.4, 9: 0.5, 10: 0.55, 11: 0.65}  # Manip NEMA 05/06 Soissons N+ (from data of J. Bertheloot, 2004)
+leaf_LSSW_dict_Marion = {1: 0.06, 2: 0.08, 3: 0.09, 4: 0.16, 5: 0.21, 6: 0.26, 7: 0.32, 8: 0.37, 9: 0.43, 10: 0.55, 11: 0.65}
 leaf_LSSW_a = 0.00005
 leaf_LSSW_integral_min = 1700
 leaf_LSSW_nominal_A = 0.0403
@@ -95,7 +103,7 @@ leaf_LSSW_MIN = 0.05
 leaf_LSSW_MAX = 0.8
 
 # Sheath: lamina ratio. Parameters of a polynomial function, from Dornbush 2011
-SL_ratio_a = -0.0021
+SL_ratio_a = - 0.0021
 SL_ratio_b = 0.037
 SL_ratio_c = - 0.1527
 SL_ratio_d = 0.4962
@@ -131,6 +139,8 @@ internode_L_init = 5E-5       #: Initial internode length (m)
 te_IN = 331.7538 * 3600 * 24 / 12  #: end of internode elongation in automate growth; Ljutovac 2002, 250pl.m-2
 tm_IN = 252.7798 * 3600 * 24 / 12  #: time at which internode elongation rate is maximal in automate growth (s);Ljutovac 2002, 250pl.m-2
 tb_IN = -374.2918 * 3600 * 24 / 12  #: beginning of internode elongation in automate growth (s);Ljutovac 2002, 250pl.m-2
+# Test météo Gauthier et al. (2021)
+# te_IN = 3000000  #: end of internode elongation in automate growth; Ljutovac 2002, 250pl.m-2
 
 ratio_LSIW_LSSW = 2.5  #: ratio lineic structural internode mass / lineic structural sheath mass  of the specific structural dry masses (from data of J. Bertheloot, 2004)
 internode_LSIW_dict = {1: 2.8, 2: 2.8, 3: 2.8, 4: 2.8, 5: 2.8, 6: 2.8, 7: 2.8, 8: 2.8, 9: 2.3, 10: 1.7, 11: 1.6, 12: 1.4, 13: 0.7}  #: experiment of M.Gauthier 2017/18, consistent with that of R.Barillot 2014
@@ -162,16 +172,16 @@ class HiddenZoneInit(object):
         self.internode_Lmax_lig = None           #: m, no calculation before ligulation Ln
         self.LSIW = None                         #: g m-1, no calculation before ligulation Ln
         self.internode_is_visible = False
-        self.leaf_pseudo_age = None
+        self.leaf_pseudo_age = -1              #: s, no calculation before emergence Ln-1
         self.internode_pseudo_age = 0
-        self.delta_leaf_pseudo_age = 0
+        self.delta_leaf_pseudo_age = 0           #: s, no calculation before emergence Ln-1
         self.delta_internode_pseudo_age = 0
         self.hiddenzone_age = 0
         self.is_over = False
         self.leaf_is_remobilizing = False
         self.internode_is_remobilizing = False
         self.ratio_DZ = 1.0
-        self.init_leaf_L = 0
+        self.init_leaf_L = 0                     #: m, needded for growthwheat
 
         # Default values used for RER calculation in elong wheat
         self.sucrose = 5E-6                      #: µmol C

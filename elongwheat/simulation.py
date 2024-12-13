@@ -24,7 +24,7 @@ from elongwheat import parameters
 
 #: the inputs needed by ElongWheat
 HIDDENZONE_INPUTS = ['leaf_is_growing', 'internode_is_growing', 'leaf_pseudo_age', 'internode_pseudo_age', 'leaf_pseudostem_length', 'internode_distance_to_emerge', 'leaf_L', 'internode_L',
-                     'lamina_Lmax', 'width', 'thickness', 'width_prev', 'thickness_prev', 'sheath_Lmax',
+                     'lamina_Lmax', 'width', 'thickness', 'width_prev', 'thickness_prev', 'sheath_Lmax', 'temperature',
                      'hiddenzone_age', 'leaf_Wmax', 'SSLW', 'LSSW', 'leaf_is_emerged', 'internode_Lmax', 'internode_Lmax_lig', 'LSIW',
                      'internode_is_visible', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'leaf_enclosed_mstruct', 'leaf_enclosed_Nstruct', 'internode_enclosed_mstruct',
                      'internode_enclosed_Nstruct', 'mstruct', 'is_over', 'mean_conc_sucrose', 'sheath_is_emerged']
@@ -34,13 +34,13 @@ AXIS_INPUTS = ['xylem_water_potential', 'SAM_temperature', 'delta_teq', 'teq_sin
 #: the outputs computed by ElongWheat
 # TODO : add be default all the attributes of the class HiddenZoneInit and ElementInit, and define which attribute is set by growthwheat.parameters or elongwheat.parameters
 HIDDENZONE_OUTPUTS = ['sheath_is_emerged', 'res', 'delta_teq', 'leaf_is_growing', 'internode_is_growing', 'leaf_pseudo_age', 'delta_leaf_pseudo_age', 'internode_pseudo_age', 'delta_internode_pseudo_age', 'leaf_pseudostem_length', 'lamina_Lmax',
-                      'width_prev', 'thickness_prev', 'sheath_Lmax',
+                      'width_prev', 'thickness_prev', 'sheath_Lmax', 'temperature', 'SL_ratio',
                       'delta_internode_distance_to_emerge', 'leaf_L', 'delta_leaf_L', 'internode_L','delta_internode_L', 'leaf_Wmax',
                       'SSLW', 'LSSW', 'leaf_is_emerged', 'internode_Lmax', 'internode_Lmax_lig', 'LSIW', 'internode_is_visible', 'sucrose', 'amino_acids', 'fructan', 'proteins',
-                      'leaf_enclosed_mstruct', 'init_leaf_L',
+                      'leaf_enclosed_mstruct', 'init_leaf_L', 'width', 'thickness',
                       'leaf_enclosed_Nstruct', 'internode_enclosed_mstruct', 'internode_enclosed_Nstruct', 'mstruct', 'is_over', 'ratio_DZ',
                       'mean_conc_sucrose', 'leaf_is_remobilizing', 'internode_is_remobilizing']
-ELEMENT_OUTPUTS = ['length', 'Wmax', 'is_growing', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'nitrates', 'starch', 'cytokinins',
+ELEMENT_OUTPUTS = ['length', 'Wmax', 'is_growing', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'nitrates', 'starch', 'cytokinins', 'width', 'thickness',
                    'mstruct', 'Nstruct', 'age', 'Nresidual', 'max_proteins', 'senesced_length_element', 'green_area', 'max_mstruct',
                    'senesced_mstruct', 'is_over']
 AXIS_OUTPUTS = ['xylem_water_potential', 'SAM_temperature', 'delta_teq', 'res', 'delta_teq_roots', 'teq_since_primordium', 'status', 'nb_leaves', 'GA', 'SAM_height', 'cohort', 'sum_TT']
@@ -264,15 +264,15 @@ class Simulation(object):
                 curr_hiddenzone_outputs['hiddenzone_age'] += curr_axis_outputs['delta_teq']
                 curr_hiddenzone_outputs['delta_teq'] = curr_axis_outputs['delta_teq']
                 curr_hiddenzone_outputs['res'] = curr_axis_outputs['res']
+                curr_hiddenzone_outputs['temperature'] = growth_temperature
 
                 hidden_sheath_id = hiddenzone_id + tuple(['sheath', 'HiddenElement'])
                 visible_sheath_id = hiddenzone_id + tuple(['sheath', 'StemElement'])
-                hidden_lamina_id = hiddenzone_id + tuple(['blade', 'HiddenElement'])
                 hidden_internode_id = hiddenzone_id + tuple(['internode', 'HiddenElement'])
                 visible_internode_id = hiddenzone_id + tuple(['internode', 'StemElement'])
                 next_hiddenzone_id = tuple(list(hiddenzone_id[:2]) + [hiddenzone_id[2] + 1])
 
-                # Found previous hidden zone
+                # Found previous hiddenzone
                 prev_hiddenzone_id = tuple(list(axis_id) + [phytomer_id - 1])
                 if prev_hiddenzone_id in all_hiddenzone_inputs:
                     prev_leaf_emerged = all_hiddenzone_inputs[prev_hiddenzone_id]['leaf_is_emerged']
@@ -330,6 +330,8 @@ class Simulation(object):
 
                     if prev_leaf2_emerged and not curr_hiddenzone_outputs['leaf_is_emerged']:
                         time_prev_leaf2_emergence = prev_hiddenzone_inputs['leaf_pseudo_age']
+                        # Age de Ln-2 dans element ? ou teIN prolongé ? ou empêcher HZ  de disparaître dans cette simul ?
+
                         curr_hiddenzone_outputs['mean_conc_sucrose'] = model.calculate_mean_conc_sucrose(hiddenzone_inputs['mean_conc_sucrose'],
                                                                                                          time_prev_leaf2_emergence,
                                                                                                          curr_axis_outputs['delta_teq'],
@@ -341,6 +343,9 @@ class Simulation(object):
                         delta_leaf_L = model.calculate_deltaL_preE(axis_inputs['xylem_water_potential'], hiddenzone_inputs['sucrose'], hiddenzone_inputs['leaf_L'], hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'],
                                                                    curr_axis_outputs['delta_teq'], phytomer_id, optimal_growth_option)
                         leaf_L = hiddenzone_inputs['leaf_L'] + delta_leaf_L
+
+                        # Maximum leaf length before previous leaf emergence (En-1)
+                        # leaf_L = min(leaf_L, 0.006949)  # Gauthier et al. (2021)
 
                         curr_hiddenzone_outputs['ratio_DZ'] = 1
                         curr_hiddenzone_outputs['length'] = min(leaf_L, hiddenzone_inputs['leaf_pseudostem_length'])
@@ -363,193 +368,88 @@ class Simulation(object):
                         curr_hiddenzone_outputs['ratio_DZ'] = model.calculate_ratio_DZ_postE(leaf_L, curr_hiddenzone_outputs['leaf_pseudo_age'], leaf_pseudostem_length)
 
                         lamina_id = hiddenzone_id + tuple(['blade', 'LeafElement1'])
-                        hidden_sheath_id = hiddenzone_id + tuple(['sheath', 'HiddenElement'])
-                        visible_sheath_id = hiddenzone_id + tuple(['sheath', 'StemElement'])
 
-                        # #: Lamina has not emerged
-                        # if not curr_hiddenzone_outputs['leaf_is_emerged']:
-                        #     #: Test of leaf emergence against distance to leaf emergence. Assumes that a leaf cannot emerge before the previous one
-                        #     #  TODO: besoin correction pour savoir a quel pas de temps exact??
-                        #     curr_hiddenzone_outputs['leaf_is_emerged'] = model.calculate_leaf_emergence(hiddenzone_inputs['leaf_L'], leaf_pseudostem_length)
-                        #     if curr_hiddenzone_outputs['leaf_is_emerged']:  # Initialise lamina outputs
-                        #         new_lamina = parameters.ElementInit().__dict__
-                        #         self.outputs['elements'][lamina_id] = new_lamina
-                        # 
-                        #         curr_lamina_outputs = all_element_outputs[lamina_id]
-                        #         # Length of emerged lamina
-                        #         lamina_L = model.calculate_lamina_L(leaf_L, leaf_pseudostem_length, hiddenzone_id)
-                        #         curr_lamina_outputs['length'] = lamina_L
-                        # 
-                        #         # Initialise variables for the next hidden zone as its previous leaf has now emerged
-                        #         if next_hiddenzone_id in all_hiddenzone_inputs:
-                        #             next_hiddenzone_inputs = all_hiddenzone_inputs[next_hiddenzone_id]
-                        #             next_hiddenzone_outputs = all_hiddenzone_outputs[next_hiddenzone_id]
-                        #             next_hiddenzone_outputs['lamina_Lmax'] = model.calculate_lamina_Lmax(hiddenzone_id[2])  #: Final lamina length
-                        #             next_hiddenzone_outputs['leaf_pseudo_age'] = 0  #: Pseudo age of the leaf since beginning of automate growth (s)
-                        #             # Width and thickness of the previous leaf
-                        #             next_hiddenzone_outputs['width_prev'] = all_hiddenzone_inputs[prev_hiddenzone_id]['width']
-                        #             next_hiddenzone_outputs['thickness_prev'] = all_hiddenzone_inputs[prev_hiddenzone_id]['thickness']
-                        #             self.outputs['hiddenzone'][next_hiddenzone_id] = next_hiddenzone_outputs
-                        #         else:
-                        #             warnings.warn('No next hidden zone found for hiddenzone {}.'.format(hiddenzone_id))
-                        # 
-                        #         # Define lamina_Wmax and structural weight of the current sheath and lamina
-                        #         curr_hiddenzone_outputs['leaf_Wmax'] = self.outputs['elements'][lamina_id]['Wmax'] = model.calculate_leaf_Wmax(hiddenzone_id[2])
-                        #         curr_hiddenzone_outputs['SSLW'] = model.calculate_SSLW(hiddenzone_id[2], curr_hiddenzone_outputs['mean_conc_sucrose'], optimal_growth_option)
-                        #         curr_hiddenzone_outputs['LSSW'] = model.calculate_LSSW(hiddenzone_id[2], curr_hiddenzone_outputs['mean_conc_sucrose'], optimal_growth_option)
-                        # 
-                        #         # Update of lamina outputs
-                        #         self.outputs['elements'][lamina_id] = curr_lamina_outputs
-                        # 
-                        # 
-                        #     #  TODO: comment sans Lmax ?
-                        #     #: ------------------------------------------------------------------------------------------------------------------------------
-                        #     # # : Test end of elongation when a leaf stops elongation inside the pseudostem (extreme stress)
-                        #     # if leaf_L >= curr_hiddenzone_outputs['leaf_Lmax']:
-                        #     #     # Update lamina_Lmax and sheath_Lmax based on updates of leaf_Lmax
-                        #     #     sheath_lamina_ratio = model.calculate_SL_ratio(hiddenzone_id[2])
-                        #     #     # Initialise hidden lamina
-                        #     #     new_hidden_lamina = parameters.ElementInit().__dict__
-                        #     #     self.outputs['elements'][hidden_lamina_id] = new_hidden_lamina
-                        #     #     self.outputs['elements'][hidden_lamina_id]['length'] = curr_hiddenzone_outputs['lamina_Lmax'] = model.calculate_lamina_Lmax(curr_hiddenzone_outputs['leaf_Lmax'], sheath_lamina_ratio)
-                        #     #     self.outputs['elements'][hidden_lamina_id]['Wmax'] = curr_hiddenzone_outputs['leaf_Wmax']
-                        #     #     self.outputs['elements'][hidden_lamina_id]['is_growing'] = False
-                        #     #     # Initialise hidden sheath outputs
-                        #     #     new_sheath = parameters.ElementInit().__dict__
-                        #     #     self.outputs['elements'][hidden_sheath_id] = new_sheath
-                        #     #     self.outputs['elements'][hidden_sheath_id]['length'] = curr_hiddenzone_outputs['sheath_Lmax'] = model.calculate_sheath_Lmax(curr_hiddenzone_outputs['leaf_Lmax'], curr_hiddenzone_outputs['lamina_Lmax'])
-                        #     #     self.outputs['elements'][hidden_sheath_id]['is_growing'] = False
-                        #     #
-                        #     #     # End of leaf growth
-                        #     #     curr_hiddenzone_outputs['leaf_is_growing'] = False
-                        #     #     curr_hiddenzone_outputs['leaf_is_remobilizing'] = True
-                        #     #: ------------------------------------------------------------------------------------------------------------------------------
-                        # 
-                        # # : Lamina has emerged and is growing
-                        # elif curr_hiddenzone_outputs['leaf_is_emerged'] and all_element_inputs[lamina_id]['is_growing']:
-                        #     curr_lamina_outputs = all_element_outputs[lamina_id]
-                        #     curr_lamina_inputs = all_element_inputs[lamina_id]
-                        # 
-                        #     # Test end of blade eleongation and sheath emergence
-                        #     curr_hiddenzone_outputs['sheath_is_emerged'] = model.calculate_sheath_emergence(curr_hiddenzone_outputs['hiddenzone_age'], hiddenzone_id[2])
-                        #     if curr_hiddenzone_outputs['sheath_is_emerged']:
-                        #         curr_lamina_outputs['is_growing'] = False
-                        # 
-                        #         # Initialise visible sheath outputs
-                        #         new_sheath = parameters.ElementInit().__dict__
-                        #         self.outputs['elements'][visible_sheath_id] = new_sheath
-                        #         curr_visible_sheath_outputs = all_element_outputs[visible_sheath_id]
-                        #         curr_visible_sheath_outputs['length'] = 10 ** -5
-                        # 
-                        #         self.outputs['elements'][visible_sheath_id] = curr_visible_sheath_outputs  # Update of sheath outputs
-                        # 
-                        #         # Initialise hidden sheath outputs
-                        #         new_sheath = parameters.ElementInit().__dict__
-                        #         self.outputs['elements'][hidden_sheath_id] = new_sheath
-                        #         curr_hidden_sheath_outputs = all_element_outputs[hidden_sheath_id]
-                        #         self.outputs['elements'][hidden_sheath_id]['length'] = leaf_pseudostem_length  # Length of hidden sheath
-                        #         self.outputs['elements'][hidden_sheath_id] = curr_hidden_sheath_outputs  # Update of sheath outputs
-                        # 
-                        #         # Initialise variables for the next internode
-                        #         if next_hiddenzone_id in all_hiddenzone_inputs:
-                        #             next_hiddenzone_outputs = all_hiddenzone_outputs[next_hiddenzone_id]
-                        #             if curr_axis_outputs['GA']:
-                        #                 next_hiddenzone_outputs['internode_Lmax'] = model.calculate_internode_Lmax(next_hiddenzone_outputs['internode_L'])  #: Estimate of final internode length
-                        #                 next_hiddenzone_outputs['internode_Lmax_lig'] = next_hiddenzone_outputs['internode_Lmax']  #: Estimate of final internode length at previous leaf ligulation
-                        #             next_hiddenzone_outputs['LSIW'] = model.calculate_LSIW(next_hiddenzone_outputs['LSSW'], next_hiddenzone_id[2],optimal_growth_option=True)  #: Lineic Structural Internode Weight
-                        #             next_hiddenzone_outputs['internode_pseudo_age'] = 0  #: Pseudo age of the internode since beginning of automate growth (s)
-                        #             self.outputs['hiddenzone'][next_hiddenzone_id] = next_hiddenzone_outputs
-                        #         else:
-                        #             warnings.warn('No next hidden zone found for hiddenzone {}.'.format(hiddenzone_id))
-                        # 
-                        #         #  TODO: comment sans Lmax ?
-                        #         #: ------------------------------------------------------------------------------------------------------------------------------
-                        #         # Case a mature sheath is shorter than the previous one.
-                        #         # hidden_lamina_L = model.calculate_hidden_lamina_L(lamina_L, curr_hiddenzone_outputs['lamina_Lmax'])
-                        #         #
-                        #         # if hidden_lamina_L > 0:
-                        #         #     # Initialise hidden lamina if any
-                        #         #     new_hidden_lamina = parameters.ElementInit().__dict__
-                        #         #     self.outputs['elements'][hidden_lamina_id] = new_hidden_lamina
-                        #         #     self.outputs['elements'][hidden_lamina_id]['length'] = hidden_lamina_L
-                        #         #     self.outputs['elements'][hidden_lamina_id]['Wmax'] = curr_hiddenzone_outputs['leaf_Wmax']
-                        #         #     self.outputs['elements'][hidden_lamina_id]['is_growing'] = False
-                        #         #     # End of sheath elongation
-                        #         #     self.outputs['elements'][visible_sheath_id]['is_growing'] = False
-                        #         #     self.outputs['elements'][hidden_sheath_id]['is_growing'] = False
-                        #         #     # End of leaf growth
-                        #         #     curr_hiddenzone_outputs['leaf_is_growing'] = False
-                        #         #     curr_hiddenzone_outputs['leaf_is_remobilizing'] = True
-                        #         #: ------------------------------------------------------------------------------------------------------------------------------
-                        # 
-                        #     # Update of lamina outputs
-                        #     self.outputs['elements'][lamina_id] = curr_lamina_outputs
-                        # 
-                        # # Mature lamina, growing sheath
-                        # else:
-                        #     visible_sheath_id = hiddenzone_id + tuple(['sheath', 'StemElement'])
-                        #     curr_visible_sheath_outputs = all_element_outputs[visible_sheath_id]
-                        # 
-                        #     hidden_sheath_id = hiddenzone_id + tuple(['sheath', 'HiddenElement'])
-                        #     curr_hidden_sheath_outputs = all_element_outputs[hidden_sheath_id]
-                        # 
-                        #     # Length of emerged sheath : in turgor-growth sub-model
-                        #     # Length of hidden sheath
-                        #     curr_hidden_sheath_outputs['length'] = leaf_pseudostem_length
-                        # 
-                        #     #: Test end of elongation
-                        #     if curr_hiddenzone_outputs['leaf_pseudo_age'] >= parameters.te:
-                        #         curr_visible_sheath_outputs['is_growing'] = False
-                        #         curr_hiddenzone_outputs['leaf_is_growing'] = False
-                        #         curr_hiddenzone_outputs['leaf_is_remobilizing'] = True
-                        #         # Hidden sheath
-                        #         curr_hidden_sheath_outputs['is_growing'] = False
-                        # 
-                        #     # Update of sheath outputs
-                        #     self.outputs['elements'][hidden_sheath_id] = curr_hidden_sheath_outputs
-                        #     self.outputs['elements'][visible_sheath_id] = curr_visible_sheath_outputs
-
-                        # ----------------------------------------------------------------------------------------------
-                        # CASE OF SIMULTANEOUS ELONGATION OF BLADE AND SHEATH - 30.08.2024
+                        # CASE OF GROWING LEAF WITH INDISSOCIED EMERGED TISSUES - 06.09.2024
+                        #: Lamina has not emerged
                         if not curr_hiddenzone_outputs['leaf_is_emerged']:
                             #: Test of leaf emergence against distance to leaf emergence. Assumes that a leaf cannot emerge before the previous one
                             curr_hiddenzone_outputs['leaf_is_emerged'] = model.calculate_leaf_emergence(hiddenzone_inputs['leaf_L'], leaf_pseudostem_length)
-                            if curr_hiddenzone_outputs['leaf_is_emerged']:
-                                # Initialise lamina outputs
+                            if curr_hiddenzone_outputs['leaf_is_emerged']:  # Initialise lamina outputs
                                 new_lamina = parameters.ElementInit().__dict__
                                 self.outputs['elements'][lamina_id] = new_lamina
+
                                 curr_lamina_outputs = all_element_outputs[lamina_id]
                                 # Length of emerged lamina
                                 lamina_L = model.calculate_lamina_L(leaf_L, leaf_pseudostem_length, hiddenzone_id)
                                 curr_lamina_outputs['length'] = lamina_L
+
+                                # Initialise variables for the next hidden zone as its previous leaf has now emerged
+                                if next_hiddenzone_id in all_hiddenzone_inputs:
+                                    next_hiddenzone_outputs = all_hiddenzone_outputs[next_hiddenzone_id]
+                                    next_hiddenzone_outputs['lamina_Lmax'] = model.calculate_lamina_Lmax(hiddenzone_id[2])  #: Maximal lamina length
+                                    curr_hiddenzone_outputs['leaf_Wmax'] = model.calculate_leaf_Wmax(hiddenzone_id[2])  #: Maximal leaf width
+                                    next_hiddenzone_outputs['leaf_pseudo_age'] = 0  #: Pseudo age of the leaf since beginning of automate growth (s)
+                                    # Width and thickness of the previous leaf
+                                    next_hiddenzone_outputs['width_prev'] = all_hiddenzone_inputs[prev_hiddenzone_id]['width']
+                                    next_hiddenzone_outputs['thickness_prev'] = all_hiddenzone_inputs[prev_hiddenzone_id]['thickness']
+                                    self.outputs['hiddenzone'][next_hiddenzone_id] = next_hiddenzone_outputs
+                                else:
+                                    warnings.warn('No next hidden zone found for hiddenzone {}.'.format(hiddenzone_id))
+
                                 # Define lamina_Wmax and structural weight of the current sheath and lamina
-                                curr_hiddenzone_outputs['leaf_Wmax'] = self.outputs['elements'][lamina_id]['Wmax'] = model.calculate_leaf_Wmax(hiddenzone_id[2])
+                                curr_lamina_outputs['Wmax'] = model.calculate_leaf_Wmax(hiddenzone_id[2])
                                 curr_hiddenzone_outputs['SSLW'] = model.calculate_SSLW(hiddenzone_id[2], curr_hiddenzone_outputs['mean_conc_sucrose'], optimal_growth_option)
                                 curr_hiddenzone_outputs['LSSW'] = model.calculate_LSSW(hiddenzone_id[2], curr_hiddenzone_outputs['mean_conc_sucrose'], optimal_growth_option)
+
                                 # Update of lamina outputs
                                 self.outputs['elements'][lamina_id] = curr_lamina_outputs
 
-                                # Initialise visible sheath outputs
-                                new_sheath = parameters.ElementInit().__dict__
-                                self.outputs['elements'][visible_sheath_id] = new_sheath
-                                curr_visible_sheath_outputs = all_element_outputs[visible_sheath_id]
-                                curr_visible_sheath_outputs['length'] = 10 ** -5
-                                self.outputs['elements'][visible_sheath_id] = curr_visible_sheath_outputs  # Update of sheath outputs
+                        # : Lamina has emerged and is growing
+                        elif curr_hiddenzone_outputs['leaf_is_emerged'] and all_element_inputs[lamina_id]['is_growing']:
+                            curr_lamina_outputs = all_element_outputs[lamina_id]
+
+                            #: Test end of elongation
+                            if curr_hiddenzone_outputs['leaf_pseudo_age'] >= parameters.te:
+                                curr_lamina_outputs['is_growing'] = False
+                                curr_hiddenzone_outputs['leaf_is_growing'] = False
+                                curr_hiddenzone_outputs['leaf_is_remobilizing'] = True
+
+                                curr_hiddenzone_outputs['sheath_is_emerged'] = True
+
                                 # Initialise hidden sheath outputs
                                 new_sheath = parameters.ElementInit().__dict__
                                 self.outputs['elements'][hidden_sheath_id] = new_sheath
                                 curr_hidden_sheath_outputs = all_element_outputs[hidden_sheath_id]
                                 self.outputs['elements'][hidden_sheath_id]['length'] = leaf_pseudostem_length  # Length of hidden sheath
+                                curr_hidden_sheath_outputs['width'] = all_hiddenzone_inputs[hiddenzone_id]['width']
+                                curr_hidden_sheath_outputs['thickness'] = all_hiddenzone_inputs[hiddenzone_id]['thickness']
+                                curr_hidden_sheath_outputs['is_growing'] = False
                                 self.outputs['elements'][hidden_sheath_id] = curr_hidden_sheath_outputs  # Update of sheath outputs
 
-                                # Initialise variables for the next hidden zone as its previous leaf has now emerged
+                                # Sheath : Lamina Ratio
+                                SL_ratio = model.calculate_SL_ratio(hiddenzone_id[2])
+                                # Initialise visible sheath outputs
+                                new_sheath = parameters.ElementInit().__dict__
+                                self.outputs['elements'][visible_sheath_id] = new_sheath
+                                curr_visible_sheath_outputs = all_element_outputs[visible_sheath_id]
+                                # Lamina and sheath lengths
+                                curr_lamina_outputs['length'] = curr_hiddenzone_outputs['leaf_L'] / (1 + SL_ratio)
+                                # curr_visible_sheath_outputs['length'] = curr_hiddenzone_outputs['leaf_L'] - curr_lamina_outputs['length'] - self.outputs['elements'][hidden_sheath_id]['length']
+                                curr_visible_sheath_outputs['length'] = max(1E-03, curr_hiddenzone_outputs['leaf_L'] - curr_lamina_outputs['length'] - self.outputs['elements'][hidden_sheath_id]['length'])
+
+                                curr_visible_sheath_outputs['is_growing'] = False
+                                curr_visible_sheath_outputs['width'] = all_hiddenzone_inputs[hiddenzone_id]['width']
+                                curr_visible_sheath_outputs['thickness'] = all_hiddenzone_inputs[hiddenzone_id]['thickness']
+                                self.outputs['elements'][visible_sheath_id] = curr_visible_sheath_outputs  # Update of sheath outputs
+
+                                # Lamina and sheath Lmax
+                                curr_hiddenzone_outputs['lamina_Lmax'] = curr_lamina_outputs['length']
+                                curr_hiddenzone_outputs['sheath_Lmax'] = curr_visible_sheath_outputs['length'] + curr_hidden_sheath_outputs['length']
+                                curr_hiddenzone_outputs['SL_ratio'] = SL_ratio
+
+                                # Initialise variables for the next internode
                                 if next_hiddenzone_id in all_hiddenzone_inputs:
                                     next_hiddenzone_outputs = all_hiddenzone_outputs[next_hiddenzone_id]
-                                    next_hiddenzone_outputs['lamina_Lmax'] = model.calculate_lamina_Lmax(hiddenzone_id[2])  #: Final lamina length
-                                    next_hiddenzone_outputs['leaf_pseudo_age'] = 0  #: Pseudo age of the leaf since beginning of automate growth (s)
-                                    # Width and thickness of the previous leaf
-                                    next_hiddenzone_outputs['width_prev'] = all_hiddenzone_inputs[prev_hiddenzone_id]['width']
-                                    next_hiddenzone_outputs['thickness_prev'] = all_hiddenzone_inputs[prev_hiddenzone_id]['thickness']
                                     if curr_axis_outputs['GA']:
                                         next_hiddenzone_outputs['internode_Lmax'] = model.calculate_internode_Lmax(next_hiddenzone_outputs['internode_L'])  #: Estimate of final internode length
                                         next_hiddenzone_outputs['internode_Lmax_lig'] = next_hiddenzone_outputs['internode_Lmax']  #: Estimate of final internode length at previous leaf ligulation
@@ -559,31 +459,9 @@ class Simulation(object):
                                 else:
                                     warnings.warn('No next hidden zone found for hiddenzone {}.'.format(hiddenzone_id))
 
-                        # : Lamina and sheath has emerged and is growing
-                        elif curr_hiddenzone_outputs['leaf_is_emerged'] and all_element_inputs[lamina_id]['is_growing']:
-                            curr_lamina_outputs = all_element_outputs[lamina_id]
-                            # Length of emerged lamina : in turgor-growth sub-model
-
-                            curr_visible_sheath_outputs = all_element_outputs[visible_sheath_id]
-                            # Length of emerged sheath : in turgor-growth sub-model
-
-                            curr_hidden_sheath_outputs = all_element_outputs[hidden_sheath_id]
-                            # Length of hidden sheath
-                            curr_hidden_sheath_outputs['length'] = leaf_pseudostem_length
-
-                            #: Test end of elongation
-                            if curr_hiddenzone_outputs['leaf_pseudo_age'] >= parameters.te:
-                                curr_lamina_outputs['is_growing'] = False
-                                curr_visible_sheath_outputs['is_growing'] = False
-                                curr_hidden_sheath_outputs['is_growing'] = False
-                                curr_hiddenzone_outputs['leaf_is_growing'] = False
-                                curr_hiddenzone_outputs['leaf_is_remobilizing'] = True
-
-                            # Update of lamina and sheath outputs
-                            self.outputs['elements'][hidden_sheath_id] = curr_hidden_sheath_outputs
-                            self.outputs['elements'][visible_sheath_id] = curr_visible_sheath_outputs
+                            # Update of lamina outputs
                             self.outputs['elements'][lamina_id] = curr_lamina_outputs
-                            # -----------------------------------------------------------------------------------------
+
 
                 # : Leaf is mature but internode may be growing
                 else:
@@ -619,7 +497,6 @@ class Simulation(object):
                         delta_internode_L = model.calculate_delta_internode_L_preL(phytomer_id, curr_hiddenzone_outputs['sucrose'], curr_hiddenzone_outputs['internode_L'],
                                                                                    curr_hiddenzone_outputs['amino_acids'], curr_hiddenzone_outputs['mstruct'],
                                                                                    curr_axis_outputs['delta_teq'], optimal_growth_option=True)
-                        # delta_internode_L = 0
                         internode_L = curr_hiddenzone_outputs['internode_L'] + delta_internode_L  # TODO: Ckeck internode_L is not too large (in the case of long delta_t)
 
                         curr_hiddenzone_outputs['internode_L'] = internode_L
@@ -650,8 +527,6 @@ class Simulation(object):
                                                                                         hiddenzone_inputs['internode_L'], curr_hiddenzone_outputs['internode_Lmax_lig'],
                                                                                         hiddenzone_inputs['sucrose'], hiddenzone_inputs['amino_acids'],
                                                                                         hiddenzone_inputs['mstruct'], optimal_growth_option=True)
-                            # delta_internode_L = 0
-
                             internode_L = hiddenzone_inputs['internode_L'] + delta_internode_L
 
                             # Update internode_Lmax
