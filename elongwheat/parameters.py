@@ -44,7 +44,7 @@ RERmax_Ljutovac_fit = {5: 0.000003, 6: 0.00000175, 7: 0.00000164, 8: 0.00000154,
 
 RERmax = {5: 3.35e-06, 6: 2.1e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 # Coupling elong-wheat and turgor-growth - 08.2024
-# RERmax = {5: 3.55e-06, 6: 2.2e-06, 7: 2.12e-06, 8: 2.1e-06, 9: 2.08e-06, 10: 1.95e-06, 11: 1.86e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+# RERmax = {5: 3.35e-06, 6: 2.2e-06, 7: 2.1e-06, 8: 2.0e-06, 9: 1.9e-06, 10: 1.75e-06, 11: 1.66e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
@@ -63,8 +63,8 @@ tb = -114.3 * 3600 * 24 / 12  #: beginning of leaf elongation in automte growth 
 # leaf_Lmax_MAX = 0.45           #: Maximum leaf_Lmax (m)
 # Fixed meteo
 leaf_Lmax_MAX = 0.50  #: Maximum leaf_Lmax (m)
-lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3}    #: Maximum lamina length (m)
-# lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3, 12: 0.32, 13: 0.34, 14: 0.36, 15: 0.38, 16: 0.4, 17: 0.42, 18: 0.44, 19: 0.46, 20: 0.48}    #: Maximum lamina length (m)
+# lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3}    #: Maximum lamina length (m)
+lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3, 12: 0.32, 13: 0.34, 14: 0.36, 15: 0.38, 16: 0.4, 17: 0.42, 18: 0.44, 19: 0.46, 20: 0.48}    #: Maximum lamina length (m)
 t_sheath_emergence_dict = {3: 319, 4: 814, 5: 1447, 6: 1809, 7: 2153, 8: 2467}     #: Time of sheath emergence (s)
 # v0
 # hiddenzone_age_dict = {3: 4304257.762806, 4: 4514564.329, 5: 4717910.118, 6: 4851700.006, 7: 5038967.217, 8: 5207272.318}     #: Hiddenzone age for sheath emergence (s)

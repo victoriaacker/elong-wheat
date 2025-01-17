@@ -378,6 +378,10 @@ class Simulation(object):
                                 new_lamina = parameters.ElementInit().__dict__
                                 self.outputs['elements'][lamina_id] = new_lamina
 
+                                # Length of the HZ at the emergence - UPDATE VICTORIA 07.01.25
+                                curr_hiddenzone_outputs['length_hz_En'] = curr_hiddenzone_outputs['leaf_L']
+                                # Width of the HZ at the emergence - UPDATE VICTORIA 07.01.25
+
                                 curr_lamina_outputs = all_element_outputs[lamina_id]
                                 # Length of emerged lamina
                                 lamina_L = model.calculate_lamina_L(leaf_L, leaf_pseudostem_length, hiddenzone_id)
@@ -387,7 +391,7 @@ class Simulation(object):
                                 if next_hiddenzone_id in all_hiddenzone_inputs:
                                     next_hiddenzone_outputs = all_hiddenzone_outputs[next_hiddenzone_id]
                                     next_hiddenzone_outputs['lamina_Lmax'] = model.calculate_lamina_Lmax(hiddenzone_id[2])  #: Maximal lamina length
-                                    curr_hiddenzone_outputs['leaf_Wmax'] = model.calculate_leaf_Wmax(hiddenzone_id[2])  #: Maximal leaf width
+                                    # curr_hiddenzone_outputs['leaf_Wmax'] = model.calculate_leaf_Wmax(hiddenzone_id[2])  #: Maximal leaf width
                                     next_hiddenzone_outputs['leaf_pseudo_age'] = 0  #: Pseudo age of the leaf since beginning of automate growth (s)
                                     # Width and thickness of the previous leaf
                                     next_hiddenzone_outputs['width_prev'] = all_hiddenzone_inputs[prev_hiddenzone_id]['width']
@@ -397,7 +401,8 @@ class Simulation(object):
                                     warnings.warn('No next hidden zone found for hiddenzone {}.'.format(hiddenzone_id))
 
                                 # Define lamina_Wmax and structural weight of the current sheath and lamina
-                                curr_lamina_outputs['Wmax'] = model.calculate_leaf_Wmax(hiddenzone_id[2])
+                                # curr_lamina_outputs['Wmax'] = model.calculate_leaf_Wmax(hiddenzone_id[2])
+                                # curr_lamina_outputs['Wmax'] = curr_hiddenzone_outputs['leaf_Wmax']
                                 curr_hiddenzone_outputs['SSLW'] = model.calculate_SSLW(hiddenzone_id[2], curr_hiddenzone_outputs['mean_conc_sucrose'], optimal_growth_option)
                                 curr_hiddenzone_outputs['LSSW'] = model.calculate_LSSW(hiddenzone_id[2], curr_hiddenzone_outputs['mean_conc_sucrose'], optimal_growth_option)
 
