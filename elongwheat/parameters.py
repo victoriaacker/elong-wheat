@@ -17,8 +17,8 @@ from __future__ import division  # use "//" to do integer division
 # --- SAM
 # -------------------------------------------------------------------------------------------------------------------
 PLASTOCHRONE = 76.1/12*24*3600    #: Leaf plastochron (s at 12°C) calculated from Ljutovac 2002 with primordia of 5E-5 m (76 dd) ; Malvoisin 35dd associated with init 3E-5 m
-max_nb_leaves = 11   #: Max number of leaves per axis
-# max_nb_leaves = 20   #: Max number of leaves per axis
+max_nb_leaves = 10   #: Max number of leaves per axis
+# max_nb_leaves = 11   #: Max number of leaves per axis
 delta_TT_GA = PLASTOCHRONE * 5  #: Thermal time between floral transition of SAM and Gibberelin production expressed as a function of plastochron (s at 12°C) ; Malvoisin's data give 7 plastochrons
 
 sowing_depth = 0.05  #: Sowing depth (m) used to define plant emergence
@@ -42,16 +42,16 @@ sheath_emergence = {3: 4304257.762806, 4: 4514564.32915857, 5: 4717910.11839452,
 RERmax_Ljutovac_fit = {5: 0.000003, 6: 0.00000175, 7: 0.00000164, 8: 0.00000154, 9: 0.00000151, 10: 0.00000134, 11: 0.00000129} # Optimal RERmax (s-1 at 12°C) allowing to simulate leaf dimensions of Ljutovac (2002)
 # { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Observed RER on data of Ljutovac 2002 RER (s-1 at 12°C)
 
-RERmax = {5: 3.35e-06, 6: 2.1e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+# RERmax = {5: 3.35e-06, 6: 2.1e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 # Coupling elong-wheat and turgor-growth - 08.2024
-# RERmax = {5: 3.35e-06, 6: 2.2e-06, 7: 2.1e-06, 8: 2.0e-06, 9: 1.9e-06, 10: 1.75e-06, 11: 1.66e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+RERmax = {5: 3.35e-06, 6: 2.2e-06, 7: 2.1e-06, 8: 2.0e-06, 9: 1.9e-06, 10: 1.75e-06, 11: 1.66e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
-RER_Kw = 0.001  #: affinity coefficient of RER to H2O (h mm-1)
-a = 1   #: coefficient of water potential and RER relation
-b = 10  #: coefficient of water potential and RER relation
-c = 0.5  #: coefficient of water potential and RER relation
+RER_Kw = 0.001  #: affinity coefficient of RER to H2O (Mpa)
+a = 1   #: coefficient of water potential and RER relation (-)
+b = 10  #: coefficient of water potential and RER relation (-)
+c = 0.5  #: coefficient of water potential and RER relation (-)
 
 # Automate elongation
 # from elong-wheat model (beta_function of elongation)
