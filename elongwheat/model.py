@@ -205,9 +205,12 @@ def calculate_deltaL_preE(xylem_water_potential, sucrose, leaf_L, amino_acids, m
             conc_amino_acids = (amino_acids / mstruct)
 
             # Sigmoid function of LER with xylem water potential
-            conc_water = parameters.a / (1 + exp(-parameters.b * xylem_water_potential - parameters.c))
+            # conc_water = parameters.a / (1 + exp(-parameters.b * xylem_water_potential - parameters.c))
+            conc_water= 1 / (1 + xylem_water_potential / -0.5) ** 4
 
-            delta_leaf_L = delta_teq * leaf_L * RER_max / ((1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids) * (1 + parameters.RER_Kw / conc_water))
+            # delta_leaf_L = delta_teq * leaf_L * RER_max / ((1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids) * (1 + parameters.RER_Kw / conc_water))
+            delta_leaf_L = delta_teq * leaf_L * RER_max / ((1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids) * (conc_water))
+
     else:
         delta_leaf_L = 0
 
@@ -354,7 +357,7 @@ def calculate_lamina_Lmax(leaf_rank):
     :return: Final lamina length (m)
     :rtype: float
     """
-    lamina_Lmax = parameters.lamina_Lmax_dict[leaf_rank]
+    lamina_Lmax = parameters.lamina_Lmax_dict.get(leaf_rank, parameters.lamina_Lmax_dict[max(parameters.lamina_Lmax_dict.keys())])
 
     return lamina_Lmax
 

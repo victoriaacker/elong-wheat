@@ -17,9 +17,9 @@ from __future__ import division  # use "//" to do integer division
 # --- SAM
 # -------------------------------------------------------------------------------------------------------------------
 PLASTOCHRONE = 76.1/12*24*3600    #: Leaf plastochron (s at 12°C) calculated from Ljutovac 2002 with primordia of 5E-5 m (76 dd) ; Malvoisin 35dd associated with init 3E-5 m
-max_nb_leaves = 10   #: Max number of leaves per axis
-# max_nb_leaves = 11   #: Max number of leaves per axis
+max_nb_leaves = 11   #: Max number of leaves per axis
 delta_TT_GA = PLASTOCHRONE * 5  #: Thermal time between floral transition of SAM and Gibberelin production expressed as a function of plastochron (s at 12°C) ; Malvoisin's data give 7 plastochrons
+# delta_TT_GA = 10000000000  #: Thermal time between floral transition of SAM and Gibberelin production expressed as a function of plastochron (s at 12°C) ; Malvoisin's data give 7 plastochrons
 
 sowing_depth = 0.05  #: Sowing depth (m) used to define plant emergence
 
