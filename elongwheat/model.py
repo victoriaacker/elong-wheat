@@ -204,12 +204,10 @@ def calculate_deltaL_preE(xylem_water_potential, sucrose, leaf_L, amino_acids, m
             # Enzymatic rate for bi-substrats with random fixation
             conc_amino_acids = (amino_acids / mstruct)
 
-            # Sigmoid function of LER with xylem water potential
-            # conc_water = parameters.a / (1 + exp(-parameters.b * xylem_water_potential - parameters.c))
-            conc_water= 1 / (1 + xylem_water_potential / -0.5) ** 4
+            # Sigmoid function of xylem water potential control of RER
+            conc_water = 1 / (1 + (xylem_water_potential / parameters.psi_ref) ** parameters.n)
 
-            # delta_leaf_L = delta_teq * leaf_L * RER_max / ((1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids) * (1 + parameters.RER_Kw / conc_water))
-            delta_leaf_L = delta_teq * leaf_L * RER_max / ((1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids) * (conc_water))
+            delta_leaf_L = delta_teq * leaf_L * RER_max / ((1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids)) * conc_water
 
     else:
         delta_leaf_L = 0

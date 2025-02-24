@@ -17,9 +17,8 @@ from __future__ import division  # use "//" to do integer division
 # --- SAM
 # -------------------------------------------------------------------------------------------------------------------
 PLASTOCHRONE = 76.1/12*24*3600    #: Leaf plastochron (s at 12°C) calculated from Ljutovac 2002 with primordia of 5E-5 m (76 dd) ; Malvoisin 35dd associated with init 3E-5 m
-max_nb_leaves = 11   #: Max number of leaves per axis
+max_nb_leaves = 11  #: Max number of leaves per axis
 delta_TT_GA = PLASTOCHRONE * 5  #: Thermal time between floral transition of SAM and Gibberelin production expressed as a function of plastochron (s at 12°C) ; Malvoisin's data give 7 plastochrons
-# delta_TT_GA = 10000000000  #: Thermal time between floral transition of SAM and Gibberelin production expressed as a function of plastochron (s at 12°C) ; Malvoisin's data give 7 plastochrons
 
 sowing_depth = 0.05  #: Sowing depth (m) used to define plant emergence
 
@@ -44,14 +43,13 @@ RERmax_Ljutovac_fit = {5: 0.000003, 6: 0.00000175, 7: 0.00000164, 8: 0.00000154,
 
 # RERmax = {5: 3.35e-06, 6: 2.1e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 # Coupling elong-wheat and turgor-growth - 08.2024
-RERmax = {5: 3.35e-06, 6: 2.2e-06, 7: 2.1e-06, 8: 2.0e-06, 9: 1.9e-06, 10: 1.75e-06, 11: 1.66e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+# RERmax = {5: 3.35e-06, 6: 2.2e-06, 7: 2.1e-06, 8: 2.0e-06, 9: 1.9e-06, 10: 1.75e-06, 11: 1.66e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+RERmax = {5: 3.45e-06, 6: 2.3e-06, 7: 2.2e-06, 8: 2.1e-06, 9: 2.0e-06, 10: 1.85e-06, 11: 1.76e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
-RER_Kw = 0.001  #: affinity coefficient of RER to H2O (Mpa)
-a = 1   #: coefficient of water potential and RER relation (-)
-b = 10  #: coefficient of water potential and RER relation (-)
-c = 0.5  #: coefficient of water potential and RER relation (-)
+psi_ref = -0.25  #: Critical leaf water potential threshold at which RER is reduced by 50% (Mpa) (Boyer, 1968)
+n = 4   #: Shape parameter of the xylem waer potential function in RER (-)
 
 # Automate elongation
 # from elong-wheat model (beta_function of elongation)
@@ -60,9 +58,7 @@ tm = 204.6 * 3600 * 24 / 12   #: time at which leaf elongation rate is maximal i
 tb = -114.3 * 3600 * 24 / 12  #: beginning of leaf elongation in automte growth (s at 12°c); fitted from adapted data from Fournier 2005
 
 # NB : Previous fit on adapted data from Fournier 2005 in phyllochronic time te = 271, tm=176, tb=-25
-# leaf_Lmax_MAX = 0.45           #: Maximum leaf_Lmax (m)
-# Fixed meteo
-leaf_Lmax_MAX = 0.50  #: Maximum leaf_Lmax (m)
+leaf_Lmax_MAX = 0.45           #: Maximum leaf_Lmax (m)
 # lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3}    #: Maximum lamina length (m)
 lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3, 12: 0.32, 13: 0.34, 14: 0.36, 15: 0.38, 16: 0.4, 17: 0.42, 18: 0.44, 19: 0.46, 20: 0.48}    #: Maximum lamina length (m)
 t_sheath_emergence_dict = {3: 319, 4: 814, 5: 1447, 6: 1809, 7: 2153, 8: 2467}     #: Time of sheath emergence (s)
@@ -75,9 +71,8 @@ leaf_pseudo_age_Vmax = 1.2    #: Maximal regulation of leaf length after emergen
 leaf_pseudo_age_Kc = 150      #: affinity coefficient to C (µmol g-1)
 leaf_pseudo_age_Kn = 4        #: affinity coefficient to N (µmol g-1)
 
-# Leaf maximal width  TODO doc
+# Leaf maximal width
 leaf_Wmax_dict = {3: 0.0040, 4: 0.0045, 5: 0.0056, 6: 0.0075, 7: 0.010, 8: 0.012, 9: 0.013, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
-# leaf_Wmax_dict = {3: 0.0040, 4: 0.0045, 5: 0.0056, 6: 0.0075, 7: 0.010, 8: 0.012, 9: 0.013, 10: 0.014, 11: 0.018, 12: 0.019, 13: 0.02, 14: 0.021, 15: 0.022, 16: 0.023, 17: 0.024, 18: 0.025, 19: 0.026, 20: 0.027}  #: m (Ljutovac 2002)
 
 leaf_W_L_MIN = 0.025  #: Minimal leaf width
 leaf_W_L_a = -0.02033728
