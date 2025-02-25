@@ -48,8 +48,8 @@ RERmax = {5: 3.35e-06, 6: 2.2e-06, 7: 2.1e-06, 8: 2.0e-06, 9: 1.9e-06, 10: 1.75e
 
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
-psi_ref = -0.2  #: Critical leaf water potential threshold at which RER is reduced by 50% (Mpa) (Boyer, 1968)
-n = 7   #: Shape parameter of the xylem waer potential function in RER (-)
+psi_ref = -0.25  #: Critical leaf water potential threshold at which RER is reduced by 50% (Mpa) (Boyer, 1968)
+n = 4   #: Shape parameter of the xylem waer potential function in RER (-)
 
 # Automate elongation
 # from elong-wheat model (beta_function of elongation)
