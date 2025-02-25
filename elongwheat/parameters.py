@@ -43,8 +43,9 @@ RERmax_Ljutovac_fit = {5: 0.000003, 6: 0.00000175, 7: 0.00000164, 8: 0.00000154,
 
 # RERmax = {5: 3.35e-06, 6: 2.1e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 # Coupling elong-wheat and turgor-growth - 08.2024
-# RERmax = {5: 3.35e-06, 6: 2.2e-06, 7: 2.1e-06, 8: 2.0e-06, 9: 1.9e-06, 10: 1.75e-06, 11: 1.66e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
-RERmax = {5: 3.45e-06, 6: 2.3e-06, 7: 2.2e-06, 8: 2.1e-06, 9: 2.0e-06, 10: 1.85e-06, 11: 1.76e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+RERmax = {5: 3.35e-06, 6: 2.2e-06, 7: 2.1e-06, 8: 2.0e-06, 9: 1.9e-06, 10: 1.75e-06, 11: 1.66e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+# RERmax = {5: 3.45e-06, 6: 2.3e-06, 7: 2.2e-06, 8: 2.1e-06, 9: 2.0e-06, 10: 1.85e-06, 11: 1.76e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+# RERmax = {5: 3.55e-06, 6: 2.5e-06, 7: 2.3e-06, 8: 2.2e-06, 9: 2.1e-06, 10: 1.95e-06, 11: 1.86e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
