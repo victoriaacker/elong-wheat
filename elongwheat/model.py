@@ -203,42 +203,31 @@ def calculate_deltaL_preE(xylem_water_potential, sucrose, leaf_L, amino_acids, m
             RER_max = parameters.RERmax.get(leaf_rank, parameters.RERmax[max(parameters.RERmax.keys())])
             # Enzymatic rate for bi-substrats with random fixation
             conc_amino_acids = (amino_acids / mstruct)
-
-            # Sigmoid function of xylem water potential control of RER
-            conc_water = 1 / (1 + (xylem_water_potential / parameters.psi_ref) ** parameters.n)
-
-            delta_leaf_L = delta_teq * leaf_L * RER_max / ((1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids)) * conc_water
-
+            regul_water = 1 / (1 + (xylem_water_potential / parameters.psi_ref) ** parameters.n)    # Sigmoidal function of xylem water potential control of RER
+            delta_leaf_L = delta_teq * leaf_L * RER_max / ((1 + parameters.RER_Kc / conc_sucrose_effective) * (1 + parameters.RER_Kn / conc_amino_acids)) * regul_water
     else:
         delta_leaf_L = 0
 
     return delta_leaf_L
 
 
-def calculate_leaf_pseudo_age(leaf_pseudo_age, delta_teq):
-    """ Pseudo age of the leaf since beginning of automate elongation (s)
+def calculate_leaf_pseudo_age(leaf_pseudo_age, delta_teq, turgor_water_potential):
+    """ Pseudo age of the leaf since beginning of the second phase of elongation (s)
 
     :param float leaf_pseudo_age: Previous pseudo age of the leaf since beginning of automate elongation (s)
-    :param float delta_teq: Temperature-consensated time = time duration at a reference temperature (s)
+    :param float delta_teq: Temperature-compensated time = time duration at a reference temperature (s)
 
     :return: Updated leaf_pseudo_age (s)
     :rtype: float
     """
-    return leaf_pseudo_age + delta_teq
 
+    if turgor_water_potential > 0.2:
+        leaf_pseudo_age = leaf_pseudo_age + delta_teq
+    else:
+        leaf_pseudo_age = leaf_pseudo_age
 
-# def Beta_function(leaf_pseudo_age):
-#     """ Normalized leaf length from the emergence of the previous leaf to the end of elongation (automate function depending on leaf pseudo age).
-#
-#     :param float leaf_pseudo_age: Pseudo age of the leaf since beginning of automate elongation (s)
-#
-#     :return: Normalized leaf length (m)
-#     :rtype: float
-#     """
-#
-#     return abs((1 + (max(0, (parameters.te - leaf_pseudo_age)) / (parameters.te - parameters.tm))) *
-#                (min(1.0, float(leaf_pseudo_age - parameters.tb) / float(parameters.te - parameters.tb)) **
-#                 ((parameters.te - parameters.tb) / (parameters.te - parameters.tm))))
+    #return leaf_pseudo_age + delta_teq
+    return leaf_pseudo_age
 
 
 def calculate_ratio_DZ_postE(leaf_L, leaf_pseudo_age, leaf_pseudostem_length):
@@ -283,40 +272,6 @@ def calculate_leaf_emergence(leaf_L, leaf_pseudostem_length):
     return leaf_L > leaf_pseudostem_length
 
 
-# def calculate_sheath_emergence(hiddenzone_age, leaf_rank):
-#     """Calculate if a given sheath has emerged from its pseudostem
-#
-#     :param float hiddenzone_age: Age of the hiddenzone in thermal-compensated time (s)
-#
-#     :return: Specifies if the sheath has emerged (True) or not (False)
-#     :rtype: bool
-#     """
-#
-#     #: Linear relation from cn-wheat outputs (Gauthier et al., 2020)
-#     # emergence_time = 177773 * leaf_rank + 4E06    #: Linear
-#     # emergence_time = 906984 * log(leaf_rank) + 3000000    #: Logarithme
-#     # emergence_time = 177773 * leaf_rank + 3800000     #: Linear - bis         OK
-#     # emergence_time = 3840000 * exp(0.0374 * leaf_rank)    # : Exponential - bis  # v2
-#     # emergence_time = 3880000 * exp(0.0374 * leaf_rank)    # : Exponential - bis    # v3       OK
-#
-#     # emergence_time = 3860000 * exp(0.0374 * leaf_rank)    # : Exponential - bis    # v4
-#
-#     # emergence_time = 3877000 * exp(0.0374 * leaf_rank)    # : Exponential - bis    # v5       OK
-#
-#     #: EARLY EMERGENCE 07.2024
-#     # emergence_time = 3860000 * exp(0.02985 * leaf_rank)    # : v5
-#
-#     emergence_time = parameters.hiddenzone_age_dict[leaf_rank]
-#     # emergence_time = 181202 * leaf_rank + 3470000    # : equation v1 - TODO
-#
-#     if hiddenzone_age >= emergence_time:
-#         sheath_is_emerged = True
-#     else:
-#         sheath_is_emerged = False
-#
-#     return sheath_is_emerged
-
-
 def calculate_lamina_L(leaf_L, leaf_pseudostem_length, hiddenzone_id):
     """ Emerged lamina length given by the difference between leaf length and leaf pseudostem length.
 
@@ -335,6 +290,7 @@ def calculate_lamina_L(leaf_L, leaf_pseudostem_length, hiddenzone_id):
 
     return max(10 ** -5, lamina_L)  # Minimum length set to 10^-6 m to make sure growth-wheat can run even if the lamina turns back hidden (case when an older sheath elongates faster)
 
+
 def calculate_SL_ratio(leaf_rank):
     """ Sheath:Lamina final length ratio according to the rank. Parameters from Dornbush (2011).
 
@@ -344,6 +300,7 @@ def calculate_SL_ratio(leaf_rank):
     :rtype: float
     """
     return parameters.SL_ratio_a * leaf_rank ** 3 + parameters.SL_ratio_b * leaf_rank ** 2 + parameters.SL_ratio_c * leaf_rank + parameters.SL_ratio_d
+
 
 def calculate_lamina_Lmax(leaf_rank):
 
@@ -416,10 +373,8 @@ def calculate_SSLW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
         SSLW = parameters.leaf_SSLW[leaf_rank]
     else:
         SSLW = (parameters.leaf_SSLW_a*integral_conc_sucr)/(parameters.leaf_SSLW_b + integral_conc_sucr)
-        # SSLW = parameters.leaf_SSLW_Marion[leaf_rank]  # Victoria 10.24
 
     return max(min(SSLW, SSLW_max), SSLW_min)
-    # return SSLW
 
 
 def calculate_LSSW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
@@ -437,37 +392,8 @@ def calculate_LSSW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
     else:
         LSSW_nominal = parameters.leaf_LSSW_nominal_A * leaf_rank + parameters.leaf_LSSW_nominal_B
         LSSW = LSSW_nominal + parameters.leaf_LSSW_a * (integral_conc_sucr - parameters.leaf_LSSW_integral_min)
-        # LSSW = parameters.leaf_LSSW_dict_Marion[leaf_rank] # Victoria 10.24
 
     return max(min(LSSW, parameters.leaf_LSSW_MAX), parameters.leaf_LSSW_MIN)
-    # return LSSW
-
-# def calculate_emerged_sheath_L(leaf_L, leaf_pseudostem_length, lamina_L):
-#
-#     """ Emerged sheath length. Assumes that leaf_L = leaf_pseudostem_length + emerged_sheath_L + lamina_L
-#
-#     :param float leaf_L: Total leaf length (m)
-#     :param float leaf_pseudostem_length: Length of the pseudostem (m)
-#     :param float lamina_L: Lamina length (m)
-#     :param float sheath_Lmax: Final sheath length (m)
-#
-#     :return: Sheath length (m)
-#     :rtype: float
-#     """
-#     sheath_L = leaf_L - leaf_pseudostem_length - lamina_L
-#     return max(sheath_L, 0.)
-
-
-# def calculate_hidden_lamina_L(lamina_L, lamina_Lmax):
-#     """ Hidden lamina length at the end of lamina growth.
-#
-#     :param float lamina_L: Length of the emerged lamina at the end of its growth (m)
-#     :param float lamina_Lmax: Final lamina length (m)
-#
-#     :return: Hidden lamina length (m)
-#     :rtype: float
-#     """
-#     return max(lamina_Lmax - lamina_L, 0.)
 
 
 # -------------------------------------------------------------------------------------------------------------------

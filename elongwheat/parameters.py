@@ -41,15 +41,18 @@ sheath_emergence = {3: 4304257.762806, 4: 4514564.32915857, 5: 4717910.11839452,
 RERmax_Ljutovac_fit = {5: 0.000003, 6: 0.00000175, 7: 0.00000164, 8: 0.00000154, 9: 0.00000151, 10: 0.00000134, 11: 0.00000129} # Optimal RERmax (s-1 at 12°C) allowing to simulate leaf dimensions of Ljutovac (2002)
 # { 5 : 0.00000279 , 6 : 0.00000176 , 7 : 0.00000162 , 8 : 0.00000144 , 9 : 0.00000144 , 10 : 0.00000144 , 11 : 0.00000142 } # Observed RER on data of Ljutovac 2002 RER (s-1 at 12°C)
 
+# CN-Wheat (2020)
 # RERmax = {5: 3.35e-06, 6: 2.1e-06, 7: 2.e-06, 8: 1.83e-06, 9: 1.8e-06, 10: 1.65e-06, 11: 1.56e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
-# Coupling elong-wheat and turgor-growth - 08.2024
-RERmax = {5: 3.35e-06, 6: 2.2e-06, 7: 2.1e-06, 8: 2.0e-06, 9: 1.9e-06, 10: 1.75e-06, 11: 1.66e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+# CNW-Wheat (2025)
 # RERmax = {5: 3.45e-06, 6: 2.3e-06, 7: 2.2e-06, 8: 2.1e-06, 9: 2.0e-06, 10: 1.85e-06, 11: 1.76e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
+RERmax = {5: 3.65e-06, 6: 2.5e-06, 7: 2.4e-06, 8: 2.3e-06, 9: 2.2e-06, 10: 2.05e-06, 11: 1.96e-06}   # RERmax (s-1 at 12°C) fitted for simulations accounting for metabolic regulation
 
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
-psi_ref = -0.25  #: Critical leaf water potential threshold at which RER is reduced by 50% (Mpa) (Boyer, 1968)
+# psi_ref = -0.25  #: Critical leaf water potential threshold at which RER is reduced by 50% (Mpa) (Boyer, 1968)
+# n = 4   #: Shape parameter of the xylem waer potential function in RER (-)
 n = 4   #: Shape parameter of the xylem waer potential function in RER (-)
+psi_ref = -0.185  #: Critical leaf water potential threshold at which RER is reduced by 50% (Mpa) (Boyer, 1968)
 
 # Automate elongation
 # from elong-wheat model (beta_function of elongation)
@@ -60,12 +63,8 @@ tb = -114.3 * 3600 * 24 / 12  #: beginning of leaf elongation in automte growth 
 # NB : Previous fit on adapted data from Fournier 2005 in phyllochronic time te = 271, tm=176, tb=-25
 leaf_Lmax_MAX = 0.45           #: Maximum leaf_Lmax (m)
 # lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3}    #: Maximum lamina length (m)
+# Meteo Gauthier et al. (2021)
 lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3, 12: 0.32, 13: 0.34, 14: 0.36, 15: 0.38, 16: 0.4, 17: 0.42, 18: 0.44, 19: 0.46, 20: 0.48}    #: Maximum lamina length (m)
-t_sheath_emergence_dict = {3: 319, 4: 814, 5: 1447, 6: 1809, 7: 2153, 8: 2467}     #: Time of sheath emergence (s)
-# v0
-# hiddenzone_age_dict = {3: 4304257.762806, 4: 4514564.329, 5: 4717910.118, 6: 4851700.006, 7: 5038967.217, 8: 5207272.318}     #: Hiddenzone age for sheath emergence (s)
-#v1
-hiddenzone_age_dict = {3: 4004257.762806, 4: 4214564.329, 5: 4297910.118, 6: 4551700.006, 7: 4738967.217, 8: 4907272.318}     #: Hiddenzone age for sheath emergence (s)
 
 leaf_pseudo_age_Vmax = 1.2    #: Maximal regulation of leaf length after emergence by CN status (dimensionless)
 leaf_pseudo_age_Kc = 150      #: affinity coefficient to C (µmol g-1)
@@ -115,7 +114,6 @@ ratio_DZ_l_end = 0.7        #: normalized log of leaf length at which the the le
 # -------------------------------------------------------------------------------------------------------------------
 # Exponential elongation
 RERmax_dict_IN = {3: 2.4E-06, 4: 2.4E-06, 5: 2.4E-06, 6: 2.4E-06, 7: 2.16E-06, 8: 1.8E-06, 9: 1.91E-06, 10: 1.9E-06, 11: 1.76E-06, 12: 1.5E-06}  #: s-1 at 12°C FIT jan 20
-# { 3 : 2.48E-06 ,4 : 2.48E-06 ,5 : 2.48E-06 , 6 : 2.48E-06 , 7 : 2.48E-06 , 8 : 2.48E-06 , 9 : 2.48E-06 , 10 : 1.9E-06 , 11 : 1.6E-06 }#: s-1 at 12°C
 
 # estimate from Ljutovac 2002 over the period until leaf ligulation i.e. wider than in the model.
 # Because i) not enought data if we consider only up to previous leaf ligulation, ii) same exponential like period
@@ -134,8 +132,6 @@ internode_L_init = 5E-5       #: Initial internode length (m)
 te_IN = 331.7538 * 3600 * 24 / 12  #: end of internode elongation in automate growth; Ljutovac 2002, 250pl.m-2
 tm_IN = 252.7798 * 3600 * 24 / 12  #: time at which internode elongation rate is maximal in automate growth (s);Ljutovac 2002, 250pl.m-2
 tb_IN = -374.2918 * 3600 * 24 / 12  #: beginning of internode elongation in automate growth (s);Ljutovac 2002, 250pl.m-2
-# Test météo Gauthier et al. (2021)
-# te_IN = 3000000  #: end of internode elongation in automate growth; Ljutovac 2002, 250pl.m-2
 
 ratio_LSIW_LSSW = 2.5  #: ratio lineic structural internode mass / lineic structural sheath mass  of the specific structural dry masses (from data of J. Bertheloot, 2004)
 internode_LSIW_dict = {1: 2.8, 2: 2.8, 3: 2.8, 4: 2.8, 5: 2.8, 6: 2.8, 7: 2.8, 8: 2.8, 9: 2.3, 10: 1.7, 11: 1.6, 12: 1.4, 13: 0.7}  #: experiment of M.Gauthier 2017/18, consistent with that of R.Barillot 2014
@@ -168,10 +164,10 @@ class HiddenZoneInit(object):
         self.LSIW = None                         #: g m-1, no calculation before ligulation Ln
         self.internode_is_visible = False
         self.leaf_pseudo_age = -1              #: s, no calculation before emergence Ln-1
-        self.internode_pseudo_age = 0
+        self.internode_pseudo_age = 0           #: s, no calculation before ligulation
         self.delta_leaf_pseudo_age = 0           #: s, no calculation before emergence Ln-1
-        self.delta_internode_pseudo_age = 0
-        self.hiddenzone_age = 0
+        self.delta_internode_pseudo_age = 0     #: s, no calculation before ligulatio
+        self.hiddenzone_age = 0                 #: s
         self.is_over = False
         self.leaf_is_remobilizing = False
         self.internode_is_remobilizing = False
@@ -202,7 +198,7 @@ class ElementInit(object):
         self.length = 0               #: m
         self.Wmax = None                  # :m maximum lamina width (could store sheath and internode diameter as well)
         self.senesced_length_element = 0  #: m
-        self.green_area = 0  #: m2
+        self.green_area = 0             #: m2
         self.age = 0                  #: Thermal Time
         self.max_proteins = 0         #: µmol N
         self.Nresidual = 0            #: g
