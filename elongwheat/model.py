@@ -226,7 +226,6 @@ def calculate_leaf_pseudo_age(leaf_pseudo_age, delta_teq, turgor_water_potential
     else:
         leaf_pseudo_age = leaf_pseudo_age
 
-    #return leaf_pseudo_age + delta_teq
     return leaf_pseudo_age
 
 
@@ -278,7 +277,6 @@ def calculate_lamina_L(leaf_L, leaf_pseudostem_length, hiddenzone_id):
     :param float leaf_L: Total leaf length (m)
     :param float leaf_pseudostem_length: Length of the pseudostem (m)
     :param tuple hiddenzone_id: Id of the hidden zone (plant_id, axis_id, phytomer_id)
-    :param float lamina_Lmax: Final lamina length (m)
 
     :return: lamina length (m)
     :rtype: float
@@ -313,7 +311,8 @@ def calculate_lamina_Lmax(leaf_rank):
     :rtype: float
     """
     lamina_Lmax = parameters.lamina_Lmax_dict.get(leaf_rank, parameters.lamina_Lmax_dict[max(parameters.lamina_Lmax_dict.keys())])
-
+    if leaf_rank > 11:
+        lamina_Lmax = 0.45
     return lamina_Lmax
 
 
@@ -338,21 +337,6 @@ def calculate_mean_conc_sucrose(prev_mean_conc_sucrose, time_prev_leaf2_emergenc
     else:
         new_integral_conc_sucrose = (prev_mean_conc_sucrose * time_prev_leaf2_emergence + conc_sucrose * delta_teq) / (time_prev_leaf2_emergence + delta_teq)
     return new_integral_conc_sucrose
-
-
-def calculate_leaf_Wmax(leaf_rank):
-
-    """ Maximal lamina width.
-
-    :param int leaf_rank: leaf phytomer number
-
-    :return: Maximal leaf width (m)
-    :rtype: float
-    """
-
-    Wmax = parameters.leaf_Wmax_dict[leaf_rank]
-
-    return Wmax
 
 
 def calculate_SSLW(leaf_rank, integral_conc_sucr, optimal_growth_option=False):
