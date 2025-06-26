@@ -49,10 +49,9 @@ RERmax = {5: 3.45e-06, 6: 2.3e-06, 7: 2.2e-06, 8: 2.1e-06, 9: 2.0e-06, 10: 1.85e
 
 RER_Kc = 100  #: affinity coefficient of RER to C (µmol g-1)
 RER_Kn = 15   #: affinity coefficient of RER to N (µmol g-1)
-# psi_ref = -0.25  #: Critical leaf water potential threshold at which RER is reduced by 50% (Mpa) (Boyer, 1968)
-# n = 4   #: Shape parameter of the xylem waer potential function in RER (-)
 n = 4   #: Shape parameter of the xylem waer potential function in RER (-)
-psi_ref = -0.185  #: Critical leaf water potential threshold at which RER is reduced by 50% (Mpa) (Boyer, 1968)
+psi_ref = -0.185  #: Critical leaf water potential threshold at which RER is reduced by 50% (Mpa) (adapted from Boyer, 1968)
+# psi_ref = -0.25  #: Critical leaf water potential threshold at which RER is reduced by 50% (Mpa) (adapted from Boyer, 1968)
 
 # Automate elongation
 # from elong-wheat model (beta_function of elongation)
@@ -62,16 +61,11 @@ tb = -114.3 * 3600 * 24 / 12  #: beginning of leaf elongation in automte growth 
 
 # NB : Previous fit on adapted data from Fournier 2005 in phyllochronic time te = 271, tm=176, tb=-25
 leaf_Lmax_MAX = 0.45           #: Maximum leaf_Lmax (m)
-# lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3}    #: Maximum lamina length (m)
-# Meteo Gauthier et al. (2021)
-lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3, 12: 0.32, 13: 0.34, 14: 0.36, 15: 0.38, 16: 0.4, 17: 0.42, 18: 0.44, 19: 0.46, 20: 0.48}    #: Maximum lamina length (m)
+lamina_Lmax_dict = {3: 0.09896253, 4: 0.10463127, 5: 0.10867923, 6: 0.1352669, 7: 0.16634665, 8: 0.19288286, 9: 0.25080917, 10: 0.28677033, 11: 0.3}    #: Maximum lamina length (m)
 
 leaf_pseudo_age_Vmax = 1.2    #: Maximal regulation of leaf length after emergence by CN status (dimensionless)
 leaf_pseudo_age_Kc = 150      #: affinity coefficient to C (µmol g-1)
 leaf_pseudo_age_Kn = 4        #: affinity coefficient to N (µmol g-1)
-
-# Leaf maximal width
-leaf_Wmax_dict = {3: 0.0040, 4: 0.0045, 5: 0.0056, 6: 0.0075, 7: 0.010, 8: 0.012, 9: 0.013, 10: 0.014, 11: 0.018}  #: m (Ljutovac 2002)
 
 leaf_W_L_MIN = 0.025  #: Minimal leaf width
 leaf_W_L_a = -0.02033728
@@ -153,7 +147,6 @@ class HiddenZoneInit(object):
         self.internode_L = 0                     #: m
         self.delta_internode_L = 0               #: m, needded for growthwheat
         self.lamina_Lmax = None                  #: m, no calculation before emergence Ln-1
-        self.leaf_Wmax = None                    #: m, no calculation before emergence Ln-1
         self.SSLW = None                         #: g m-2, no calculation before emergence Ln-1
         self.LSSW = None                         #: g m-1, no calculation before emergence Ln-1 (about 2)
         self.leaf_is_emerged = False
@@ -196,7 +189,6 @@ class ElementInit(object):
         self.is_growing = True
         self.is_over = False
         self.length = 0               #: m
-        self.Wmax = None                  # :m maximum lamina width (could store sheath and internode diameter as well)
         self.senesced_length_element = 0  #: m
         self.green_area = 0             #: m2
         self.age = 0                  #: Thermal Time
